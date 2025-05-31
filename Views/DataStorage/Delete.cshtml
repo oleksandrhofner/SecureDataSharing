@@ -1,0 +1,45 @@
+﻿@model SecureDataSharing.Models.DeleteDataConfirmationViewModel
+@using SecureDataSharing.Models // Для StorageEntryType, якщо потрібно
+
+@{
+	ViewData["Title"] = "Підтвердження видалення";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h3 class="text-danger">Ви впевнені, що хочете видалити цей запис?</h3>
+<div>
+	<h4>
+		@if (Model.DataType == StorageEntryType.File && !string.IsNullOrEmpty(Model.OriginalFileName))
+		{
+			<span>Файл: @Html.DisplayFor(model => model.OriginalFileName)</span>
+		}
+		else
+		{
+			<span>Запис: @Html.DisplayFor(model => model.DataName)</span>
+		}
+	</h4>
+	<hr />
+	<dl class="row">
+		<dt class="col-sm-3">Назва/мітка запису</dt>
+		<dd class="col-sm-9">@Html.DisplayFor(model => model.DataName)</dd>
+
+		<dt class="col-sm-3">Тип</dt>
+		<dd class="col-sm-9">@Html.DisplayFor(model => model.DataType)</dd>
+
+		@if (Model.DataType == StorageEntryType.File && !string.IsNullOrEmpty(Model.OriginalFileName))
+		{
+			<dt class="col-sm-3">Оригінальне ім'я файлу</dt>
+			<dd class="col-sm-9">@Html.DisplayFor(model => model.OriginalFileName)</dd>
+		}
+		<dt class="col-sm-3">Власник</dt>
+		<dd class="col-sm-9">@Html.DisplayFor(model => model.OwnerEmail)</dd>
+	</dl>
+
+	<form asp-action="DeleteConfirmed" method="post">
+		<input type="hidden" asp-for="Id" />
+		@Html.AntiForgeryToken()
+		<input type="submit" value="Видалити" class="btn btn-danger" /> |
+		<a asp-action="Index" class="btn btn-secondary">Скасувати</a>
+	</form>
+</div>

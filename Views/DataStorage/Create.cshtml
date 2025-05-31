@@ -1,0 +1,111 @@
+﻿@model SecureDataSharing.Models.CreateDataViewModel
+@{
+	ViewData["Title"] = "Створити новий запис";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<hr />
+<div class="row">
+	<div class="col-md-8">
+		@* ВАЖЛИВО: enctype для завантаження файлів *@
+		<form asp-action="Create" method="post" enctype="multipart/form-data">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+			<div class="form-group mb-3">
+				<label asp-for="DataName" class="control-label"></label>
+				<input asp-for="DataName" class="form-control" />
+				<span asp-validation-for="DataName" class="text-danger"></span>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="DataType" class="control-label"></label>
+				@* Використовуємо Html.GetEnumSelectList для генерації опцій з enum StorageEntryType *@
+				<select asp-for="DataType" asp-items="Html.GetEnumSelectList<StorageEntryType>()" class="form-control" id="dataTypeSelector">
+					<option value="">-- Виберіть тип --</option>
+				</select>
+				<span asp-validation-for="DataType" class="text-danger"></span>
+			</div>
+
+			@* Поле для введення тексту *@
+			<div class="form-group mb-3" id="plainTextDataGroup" style="display:none;">
+				<label asp-for="PlainTextData" class="control-label"></label>
+				<textarea asp-for="PlainTextData" class="form-control" rows="5"></textarea>
+				<span asp-validation-for="PlainTextData" class="text-danger"></span>
+			</div>
+
+			@* Поле для завантаження файлу *@
+			<div class="form-group mb-3" id="fileToUploadGroup" style="display:none;">
+				<label asp-for="FileToUpload" class="control-label"></label>
+				<input asp-for="FileToUpload" class="form-control" type="file" />
+				<span asp-validation-for="FileToUpload" class="text-danger"></span>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="UserPassword" class="control-label"></label>
+				<input asp-for="UserPassword" class="form-control" />
+				<span asp-validation-for="UserPassword" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<input type="submit" value="Зберегти" class="btn btn-primary" />
+				<a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+
+			function toggleInputFields() {
+				console.log("toggleInputFields function called."); // 1. Перевірка виклику функції
+				var selectedType = $('#dataTypeSelector').val();
+				console.log("Selected value from dropdown: ", selectedType); // 2. Яке значення ми отримали?
+				console.log("Comparing with Text value: ", "@(((int)StorageEntryType.Text).ToString())");
+				console.log("Comparing with File value: ", "@(((int)StorageEntryType.File).ToString())");
+
+				if (selectedType === '@(((int)StorageEntryType.Text).ToString())') {
+					console.log("Condition for Text met.");
+					$('#plainTextDataGroup').show();
+					$('#fileToUploadGroup').hide();
+					$('#FileToUpload').val('');
+				} else if (selectedType === '@(((int)StorageEntryType.File).ToString())') {
+					console.log("Condition for File met.");
+					$('#plainTextDataGroup').hide();
+					$('#PlainTextData').val('');
+					$('#fileToUploadGroup').show();
+				} else {
+					console.log("No specific condition met (else branch). Hiding both.");
+					$('#plainTextDataGroup').hide();
+					$('#fileToUploadGroup').hide();
+				}
+			}
+
+			$('#dataTypeSelector').change(function () {
+				console.log("dataTypeSelector changed.");
+				toggleInputFields();
+			});
+			const maxFileSize = parseInt('@ViewBag.MaxFileSize');
+			const maxFileSizeDisplay = "2 GB";
+					$('#FileToUpload').change(function() {
+			const file = this.files[0];
+			if (file) {
+				if (file.size > maxFileSize) {
+					alert('Файл занадто великий! Максимальний розмір: ' + maxFileSizeDisplay + '.');
+					$(this).val('');
+				}
+			}
+		});
+
+			// Викликаємо при завантаженні сторінки
+			console.log("Calling toggleInputFields on document ready.");
+			toggleInputFields();
+		});
+	</script>
+}

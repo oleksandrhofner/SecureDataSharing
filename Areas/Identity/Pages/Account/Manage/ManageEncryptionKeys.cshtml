@@ -1,0 +1,48 @@
+﻿@page
+@model SecureDataSharing.Areas.Identity.Pages.Account.Manage.ManageEncryptionKeysModel
+@{
+    ViewData["Title"] = "Керування ключами шифрування";
+    ViewData["ActivePage"] = ManageNavPages.ManageEncryptionKeys;
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-md-6">
+        @if (Model.HasActiveKeys)
+        {
+            <div class="alert alert-success" role="alert">
+                <p>У вас є активні ключі шифрування.</p>
+                <p>Якщо ви згенеруєте нові ключі, ви <strong>можете втратити доступ</strong> до даних, зашифрованих попередніми ключами.</p>
+                <p>Ця дія рекомендується, якщо ви підозрюєте компрометацію ваших поточних ключів, або після скидання пароля, якщо ключі були очищені.</p>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <p>У вас наразі немає активних ключів шифрування (можливо, після скидання пароля). Згенеруйте нові, щоб мати можливість створювати зашифровані дані та файли.</p>
+            </div>
+        }
+
+        <form id="generate-keys-form" method="post" asp-page-handler="GenerateNewKeys">
+            @if (Model.HasActiveKeys)
+            {
+                <p class="text-warning"><strong>Увага:</strong> Генерація нових ключів зробить дані, зашифровані старими ключами, недоступними, якщо вони не були перешифровані!</p>
+            }
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.CurrentPasswordForNewKeys" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Поточний пароль" />
+                <label asp-for="Input.CurrentPasswordForNewKeys" class="form-label"></label>
+                <span asp-validation-for="Input.CurrentPasswordForNewKeys" class="text-danger"></span>
+            </div>
+            <button id="generate-keys-button" type="submit" class="w-100 btn btn-lg btn-primary">
+                @(Model.HasActiveKeys ? "Згенерувати нові ключі (перезаписати існуючі)" : "Згенерувати ключі шифрування")
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

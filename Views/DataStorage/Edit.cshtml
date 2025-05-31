@@ -1,0 +1,74 @@
+﻿@model SecureDataSharing.Models.EditDataViewModel
+@using SecureDataSharing.Models
+
+@{
+	ViewData["Title"] = "Редагувати запис: " + Model.DataName;
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+	<div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div class="row">
+	<div class="col-md-8">
+		<form asp-action="Edit" method="post" enctype="multipart/form-data" id="mainEditForm">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="Id" />
+			<input type="hidden" asp-for="DataType" />
+			<input type="hidden" asp-for="OriginalFileName" />
+			<input type="hidden" asp-for="ContentType" />
+
+
+			<div class="form-group mb-3">
+				<label asp-for="DataName" class="control-label"></label>
+				<input asp-for="DataName" class="form-control" />
+				<span asp-validation-for="DataName" class="text-danger"></span>
+			</div>
+
+			@if (Model.DataType == StorageEntryType.Text)
+			{
+				<div class="form-group mb-3">
+					<label asp-for="TextContent" class="control-label"></label>
+					<textarea asp-for="TextContent" class="form-control" rows="5"></textarea>
+					<span asp-validation-for="TextContent" class="text-danger"></span>
+				</div>
+			}
+			else if (Model.DataType == StorageEntryType.File)
+			{
+				<div class="alert alert-info">
+					Поточний тип запису: Файл. <br />
+					Оригінальне ім'я: <strong>@Model.OriginalFileName</strong> <br />
+					Тип вмісту: <strong>@Model.ContentType</strong> <br />
+					Завантажте новий файл нижче, щоб замінити існуючий. Якщо файл не вибрано, вміст файлу не зміниться (буде оновлено лише назву/мітку, якщо ви її змінили).
+				</div>
+				<div class="form-group mb-3">
+					<label asp-for="NewFileToUpload" class="control-label"></label>
+					<input asp-for="NewFileToUpload" class="form-control" type="file" />
+					<span asp-validation-for="NewFileToUpload" class="text-danger"></span>
+				</div>
+			}
+
+			<hr />
+			<div class="form-group mb-3">
+				<label asp-for="UserPasswordForSave" class="control-label"></label>
+				<input asp-for="UserPasswordForSave" class="form-control" />
+				<span asp-validation-for="UserPasswordForSave" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<input type="submit" value="Зберегти зміни" class="btn btn-primary" />
+				<a asp-action="Index" class="btn btn-secondary">Скасувати</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

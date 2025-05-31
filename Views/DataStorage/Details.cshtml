@@ -1,0 +1,95 @@
+﻿@model SecureDataSharing.Models.DetailsViewModel
+@using SecureDataSharing.Helpers 
+@using SecureDataSharing.Models
+
+@{
+    ViewData["Title"] = "Деталі запису: " + Model.DataName;
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info">@TempData["InfoMessage"]</div>
+}
+    <div>
+        <dl class="row">
+            <dt class="col-sm-3">Назва/мітка запису</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DataName)</dd>
+
+            <dt class="col-sm-3">Тип даних</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DataType)</dd>
+
+            @if (Model.DataType == StorageEntryType.File)
+            {
+                <dt class="col-sm-3">Оригінальне ім'я файлу</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.OriginalFileName)</dd>
+
+                <dt class="col-sm-3">Тип вмісту (MIME)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.ContentType)</dd>
+
+                <dt class="col-sm-3">Розмір файлу</dt>
+                <dd class="col-sm-9">@FileDisplayHelper.FormatFileSize(Model.FileSize)</dd>
+            }
+
+            <dt class="col-sm-3">Дата створення/оновлення</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Timestamp)</dd>
+        </dl>
+
+    @if (Model.UserHasPermission)
+    {
+        if (Model.RequirePasswordPrompt)
+        {
+            <hr />
+            <h4>Введіть пароль для доступу:</h4>
+            <form asp-action="ViewDecrypted" asp-controller="DataStorage" method="post" class="mt-3">
+                <input type="hidden" name="id" value="@Model.Id" />
+                @Html.AntiForgeryToken()
+                <div class="form-group mb-2 col-md-6">
+                    <label for="userPassword" class="form-label">Ваш поточний пароль:</label>
+                    <input type="password" name="userPassword" id="userPassword" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    @(Model.DataType == StorageEntryType.File ? "Розшифрувати та Завантажити" : "Розшифрувати та Переглянути")
+                </button>
+            </form>
+        }
+        else if (!string.IsNullOrEmpty(Model.DecryptedText) && Model.DataType == StorageEntryType.Text && Model.DecryptedText != "[Помилка дешифрування даних.]")
+        {
+            <hr />
+            <h4 class="mt-3">Розшифровані дані:</h4>
+            <div class="card">
+                <div class="card-body bg-light">
+                    <pre style="white-space: pre-wrap; word-wrap: break-word;">@Html.DisplayFor(model => model.DecryptedText)</pre>
+                </div>
+            </div>
+
+            @if (Model.IsOwner && Model.DataType == StorageEntryType.Text)
+            {
+                <div class="mt-3">
+                    <a asp-action="Edit" asp-controller="DataStorage" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Редагувати цей текст
+                    </a>
+                </div>
+            }
+        }
+        else if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+        }
+        else if (Model.DataType == StorageEntryType.File && !Model.RequirePasswordPrompt && string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <hr />
+            <div class="alert alert-success">Файл було підготовлено до завантаження. Якщо завантаження не почалося автоматично, перевірте налаштування браузера.</div>
+        }
+    }
+</div>
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+</div>

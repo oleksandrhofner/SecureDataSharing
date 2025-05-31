@@ -1,0 +1,79 @@
+﻿@model SecureDataSharing.Models.ShareDataViewModel
+
+@{
+    ViewData["Title"] = "Надати доступ до даних";
+}
+
+<h2>@ViewData["Title"]</h2>
+<h4>Дані: @Html.DisplayFor(model => model.DataName)</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @if (Model.PotentialRecipients == null || !Model.PotentialRecipients.Any())
+        {
+            <div class="alert alert-info mt-3" role="alert">
+                Немає нових користувачів, яким можна надати доступ.
+            </div>
+        }
+        else
+        {
+            <form asp-action="Share" method="post">
+                <input type="hidden" asp-for="StoredDataId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="SelectedRecipientUserId" class="control-label"></label>
+                    <select asp-for="SelectedRecipientUserId" class="form-control" asp-items="@Model.PotentialRecipients">
+                        <option value="">-- Виберіть користувача --</option>
+                    </select>
+                    <span asp-validation-for="SelectedRecipientUserId" class="text-danger"></span>
+                </div>
+
+                @* ПОЛЕ ДЛЯ ПАРОЛЯ ВЛАСНИКА *@
+                <div class="form-group mb-3">
+                    <label asp-for="OwnerPassword" class="control-label"></label>
+                    <input asp-for="OwnerPassword" class="form-control" />
+                    <span asp-validation-for="OwnerPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Надати доступ" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary">Скасувати</a>
+                </div>
+            </form>
+        }
+    </div>
+    <div class="col-md-6">
+        <h5>Вже надано доступ:</h5>
+        @if (Model.ExistingPermissions != null && Model.ExistingPermissions.Any())
+        {
+            <ul class="list-group">
+                @foreach (var permission in Model.ExistingPermissions)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @permission.RecipientEmail
+                        @* Форма для скасування доступу *@
+                        <form asp-action="RevokeAccess" method="post" onsubmit="return confirm('Ви впевнені, що хочете скасувати доступ для користувача @permission.RecipientEmail?');">
+                            <input type="hidden" name="storedDataId" value="@Model.StoredDataId" />
+                            <input type="hidden" name="recipientUserId" value="@permission.RecipientUserId" />
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-user-slash"></i> Скасувати
+                            </button>
+                        </form>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Ви ще не надавали доступ до цих даних.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
