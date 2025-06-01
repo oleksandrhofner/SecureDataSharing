@@ -11,7 +11,7 @@
 1.  **.NET 8 SDK:** Застосунок розроблено на .NET 8. Завантажте та встановіть останню версію з [офіційного сайту Microsoft](https://dotnet.microsoft.com/download/dotnet/8.0).
 2.  **IDE Visual Studio Community 2022:** Під час встановлення Visual Studio переконайтеся, що встановлено доповнення **"ASP.NET and web development"**.
 3.  **SQL Server 2022 Express Edition:** Встановіть SQL Server 2022 Express.
-      * Під час встановлення запам'ятайте або встановіть ім'я екземпляра (instance name). Ім'я екземпляра буде `SQLEXPRESS01`, для підключення використовується `ІМЯ_ВАШОГО_КОМП'ЮТЕРА\SQLEXPRESS01`.
+      * Під час встановлення запам'ятайте або встановіть ім'я екземпляра (instance name). Ім'я екземпляра буде `SQLEXPRESS01`, для підключення використовується `ІМ'Я_ВАШОГО_КОМП'ЮТЕРА\SQLEXPRESS01`.
 4.  **SQL Server Management Studio (SSMS):** Встановіть SSMS. Це графічний інструмент для керування вашим SQL Server. Рекомендується встановлювати останню версію з [офіційного сайту Microsoft](https://aka.ms/ssms/21/release/vs_SSMS.exe)
 
 ## 2\. Отримання Коду Проєкту
@@ -26,7 +26,7 @@ git clone https://github.com/oleksandrhofner/SecureDataSharing.git
 
 1.  **Перевірка Сервера:** Переконайтеся, що ваш екземпляр SQL Server 2022 запущено (це можна перевірити через "SQL Server Configuration Manager").
 2.  **Запуск SSMS:** Запустіть SQL Server Management Studio.
-3.  **Підключення до Екземпляра:** Підключіться до вашого екземпляра SQL Server (`ІМЯ_ВАШОГО_КОМП'ЮТЕРА\SQLEXPRESS01`), використовуючи Windows Authentication.
+3.  **Підключення до Екземпляра:** Підключіться до вашого екземпляра SQL Server (`ІМ'Я_ВАШОГО_КОМП'ЮТЕРА\SQLEXPRESS01`), використовуючи Windows Authentication.
 4.  **Створення Бази Даних:** У вікні "Object Explorer" в SSMS клацніть правою кнопкою миші на папці **"Databases"** та виберіть **"New Database..."**.
 5.  **Ім'я Бази Даних:** Введіть ім'я бази даних: `SecureDataSharingDB`. Натисніть **OK**.
 
@@ -74,3 +74,4 @@ git clone https://github.com/oleksandrhofner/SecureDataSharing.git
 4.  Почати використовувати основний функціонал системи.
 
 Готово\! Тепер ви можете користуватися веб-застосунком `SecureDataSharing` локально.
+## УВАГА: Для використання сервісу надсилання реальних електронних листів через SendGrid (наприклад, для функції відновлення пароля) потрібен API ключ SendGrid!, тому функція відновлення пароля через пошту недоступний!
