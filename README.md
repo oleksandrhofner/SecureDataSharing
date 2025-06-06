@@ -198,7 +198,6 @@ cd SecureDataSharing
   - Документація Entity Framework Core [Entity Framework Core](docs.microsoft.com/ef/core)
   - Документація ASP.NET Core Identity [ASP.NET Core Identity](docs.microsoft.com/aspnet/core/security/authentication/identity)
   - Документація по System.Security.Cryptography [System.Security.Cryptography](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography?view=net-9.0)
-  - 
 ---
 
 
